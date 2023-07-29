@@ -1,0 +1,1 @@
+Your picture have to be named 'background.jpg'
