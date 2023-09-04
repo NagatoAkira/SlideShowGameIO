@@ -49,4 +49,15 @@ window.addEventListener('mousemove', function(event){
 	ball.getMousePos({x: event.clientX, y: event.clientY})
 })
 
+window.addEventListener('click', function(event){
+	let pos = {x: event.clientX, y: event.clientY}
+	let cakepos = {x: canvas.width/2-100.5, y: canvas.height/2-62.5}
+	if(pos.x > cakepos.x && pos.x < cakepos.x+201 &&
+	   pos.y > cakepos.y && pos.y < cakepos.y+125 && gameProcess.GameOver){
+		ball = new Player()
+		gameProcess = new generatorNangle(9,fps,-5,ball)
+		gameover = new GameOver(gameProcess, ball)
+	}
+})
+
 animate()

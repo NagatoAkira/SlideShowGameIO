@@ -2,6 +2,7 @@ body {
          height : 100%;
          width : 100%;
          background-color: #000000;
+
       }
 canvas{ 
          display: block;
@@ -12,17 +13,10 @@ canvas{
          right: 0;
          height: 100%;
          width: 100%;
+         cursor: url('cursor\\pointer.png'), pointer;
       }
 
 @font-face{
     font-family: 'bold Kalam';
     src: url('font\\Kalam-Bold.ttf');
-}
-@font-face{
-    font-family: 'light Kalam';
-    src: url('font\\Kalam-Light.ttf');
-}
-@font-face{
-    font-family: 'Kalam';
-    src: url('font\\Kalam-Regular.ttf');
 }
