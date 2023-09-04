@@ -13,3 +13,16 @@ canvas{
          height: 100%;
          width: 100%;
       }
+
+@font-face{
+    font-family: 'bold Kalam';
+    src: url('font\\Kalam-Bold.ttf');
+}
+@font-face{
+    font-family: 'light Kalam';
+    src: url('font\\Kalam-Light.ttf');
+}
+@font-face{
+    font-family: 'Kalam';
+    src: url('font\\Kalam-Regular.ttf');
+}

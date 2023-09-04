@@ -1,1 +1,0 @@
-Your picture have to be named by ordinal numbers and with format 'jpg'

@@ -1,3 +1,9 @@
+function spriteAnimate(image, frame, amount, x=0, y=0, w=69, h=69, wl=69, hl=69){
+	frame = frame % amount
+	ctx.drawImage(image, w*frame, 0, w, h, x, y, wl, hl)
+}
+
+
 class N_angle{
 	constructor(n,degrees, speedScale, player){
 		this.x = canvas.width/2
@@ -6,8 +12,8 @@ class N_angle{
 
 		this.scale = canvas.width>canvas.height ? canvas.width*0.7:canvas.height*0.7
 
-		this.lineWidth = 20
-		this.color = '#FFFFFF'
+		this.lineWidth = 30
+		this.color = '#D40000'
 
 		this.Nangle = this.getNangle()
 
@@ -19,6 +25,7 @@ class N_angle{
 		this.degrees = degrees + 30
 
 		this.isAble = true
+		this.isBlur = true
 
 		this.correctDegrees()
 	}
@@ -110,8 +117,23 @@ class N_angle{
 		this.scale += this.speedScale
 	}
 	drawCloseLine(positions){
+		//Out
+		ctx.strokeStyle = '#000000'
+		ctx.lineWidth = this.lineWidth+10
+		ctx.lineCap = 'round'
+		ctx.beginPath()
+		for(let i=1; i<positions.length; i++){
+			let x = positions[i].x
+			let y = positions[i].y
+
+			ctx.lineTo(x,y)
+		}
+		ctx.stroke()
+
+		//Inside
 		ctx.strokeStyle = this.color
 		ctx.lineWidth = this.lineWidth
+		ctx.lineCap = 'round'
 		ctx.beginPath()
 		for(let i=1; i<positions.length; i++){
 			let x = positions[i].x
@@ -121,11 +143,18 @@ class N_angle{
 		}
 		ctx.stroke()
 	}
+	blur(){
+		ctx.save()
+		ctx.filter = 'blur(10px)'
+		this.drawCloseLine(this.Nangle)
+		ctx.restore()
+	}
 	update(){
 		if(this.isAble){
 			this.rotateNangle(0)
 			this.scaleNangle()
 		}
+		//this.blur()
 		this.drawCloseLine(this.Nangle)
 	}
 }
@@ -167,7 +196,13 @@ class generatorNangle{
 					
 				}
 				else{
-					this.GameOver = true
+					this.player.cake.stage += 1
+					this.deleteNangle(i)
+
+					if(this.player.cake.stage >= 7){
+						this.GameOver = true
+					}
+					
 				}
 			}
 		}
@@ -206,11 +241,14 @@ class Player{
 		this.areaRadius = 100
 		this.selfRadius = 20
 
-		this.color = '#FFFFFF'
+		this.color = '#000000'
 
 		// Default
 		this.mousePos = {x: 0, y: 0}
 		this.degrees = 0
+
+		this.cake = {sprite: new Image(), stage: 0}
+		this.cake.sprite.src = 'animation\\cake.png'
 
 		this.isAble = true
 	}
@@ -230,9 +268,10 @@ class Player{
 		this.degrees = degrees
 	}
 	drawCenter(){
-		ctx.beginPath()
-		ctx.arc(this.centerPos.x, this.centerPos.y, 10, 0, Math.PI * 2)
-		ctx.fill()
+		let scl_multiply = 0.5
+		spriteAnimate(this.cake.sprite, this.cake.stage, 8, canvas.width/2-402*scl_multiply/2, canvas.height/2-250*scl_multiply/2, 
+															402, 250, 
+															402*scl_multiply, 250*scl_multiply)
 	}
 
 	draw(){
@@ -246,13 +285,23 @@ class Player{
 		this.isAble = false
 	}
 
+	blur(){
+		ctx.save()
+		ctx.filter = 'blur(10px)'
+		this.draw()
+		this.drawCenter()
+		ctx.restore()
+	}
+
 	update(){
 		if(this.isAble){
 		this.getMousePos()
 		this.definePos()
 		}
-		this.draw()
+		//this.blur()
 		this.drawCenter()
+		if(this.isAble){this.draw()}
+		
 	}
 
 }
@@ -263,7 +312,7 @@ class GameOver{
 
 		this.isAble = true
 
-		this.alpha = 1
+		this.alpha = 0
 	}
 	stopGame(){
 		if(this.isAble){
@@ -274,11 +323,11 @@ class GameOver{
 		}
 	}
 	setAlphaPositive(speed){
-		if(ctx.globalAlpha < 1){
+		if(this.alpha < 1){
 		if(ctx.globalAlpha + 2*speed < 1){
-			ctx.globalAlpha += speed
+			this.alpha += speed
 		}else{
-			ctx.globalAlpha = 1
+			this.alpha = 1
 		}
 	  }	
 	}
@@ -293,21 +342,24 @@ class GameOver{
 	}
 	textDraw(){
 		let text = ["Your", "Score:", this.nanagon.score.toString()]
-		let fontSize = 200
-		let offset = 40
-		ctx.font = fontSize.toString() + 'px Roboto'
-		ctx.fillStyle = '#FFFFFF'
-
+		let fontSize = 50
+		let offset = {x:canvas.width/2-50, y: canvas.height/2+150}
+		ctx.font = fontSize.toString() + 'px bold Kalam'
+		
+		ctx.fillStyle = '#000000'
 		// Write Text
-		ctx.fillText(text[0], offset, canvas.height/2-fontSize/2)
-		ctx.fillText(text[1], offset, canvas.height/2+fontSize-fontSize/2)
-		ctx.fillText(text[2], offset, canvas.height/2+2*fontSize-fontSize/2)
+		ctx.fillText(text[0], offset.x, offset.y-fontSize/2)
+		ctx.fillText(text[1], offset.x, offset.y+fontSize-fontSize/2)
+		ctx.fillStyle = '#D40000'
+		ctx.fillText(text[2], offset.x, offset.y+2*fontSize-fontSize/2)
 	}
 	update(isGameOver){
 		if(isGameOver){
+			ctx.globalAlpha = this.alpha
 			this.stopGame()
 			this.setAlphaPositive(0.05)
 			this.textDraw()
+			ctx.globalAlpha = 1
 		}
 	}
 }

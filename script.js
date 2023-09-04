@@ -13,19 +13,15 @@ function openImage(path,name){
 	return img
 }
 
-function game_update(score){
+function game_update(){
 	let bg = openImage('background\\', 'background')
-	ctx.drawImage(bg, 0, 0, canvas.width, canvas.height)
+	let scroll = {img: openImage('background\\', 'scroll')}
+	scroll.w = canvas.height/scroll.img.height * scroll.img.width
+	scroll.h = canvas.height
 
-	let index = score%imageAmount
-	let img = openImage('pictures\\',(index+1).toString())
 
-	ctx.drawImage(img,canvas.width/2-img.width/2,canvas.height/2-img.height/2, img.width, img.height)
-
-	ctx.globalAlpha = 0.4
-	ctx.fillStyle = '#000000'
-	ctx.fillRect(0,0,canvas.width,canvas.height)
-	ctx.globalAlpha = 1
+	ctx.drawImage(bg, -canvas.width*0.05, -canvas.height*0.05, canvas.width*1.1, canvas.height*1.1)
+	ctx.drawImage(scroll.img, canvas.width/2 - scroll.w/2, 0, scroll.w, scroll.h)
 }
 
 const fps = 60
@@ -41,12 +37,12 @@ function animate(){
 
   	game_update(gameProcess.score)
 
-  	gameover.update(gameProcess.GameOver)
-
   	if(!gameProcess.GameOver){
   	gameProcess.update()
-  	ball.update()
   	}
+  	ball.update()
+
+  	gameover.update(gameProcess.GameOver)
 }
 
 window.addEventListener('mousemove', function(event){
